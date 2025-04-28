@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import FutsalField from '@/components/FutsalField'; 
+import FutsalField from '@/components/futsalfield'; 
 // RiftField, SoccerField 컴포넌트도 추가 예정
 
 export default function HomePage() {

@@ -4,7 +4,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import html2canvas from 'html2canvas';
 import { saveAs } from 'file-saver';
-import FutsalField from '@/components/FutsalField';
+import FutsalField from '@/components/futsalfield';
 import { Crown } from 'lucide-react'; // 왕관 아이콘
 
 export default function FutsalFormationPage() {
