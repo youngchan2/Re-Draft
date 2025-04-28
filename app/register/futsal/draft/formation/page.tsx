@@ -80,9 +80,9 @@ export default function FutsalFormationPage() {
       >
         <FutsalField />
         
-        {['team1', 'team2'].map((team) => (
+        {(['team1', 'team2'] as const).map((team) => (
           <React.Fragment key={team}>
-            {positions[team as 'team1' | 'team2'].map((p) => {
+            {positions[team].map((p) => {
               const isCaptain = p.name.includes('(C)');
               const isDragging = dragged?.team === team && dragged?.playerID === p.id;
 
@@ -90,9 +90,9 @@ export default function FutsalFormationPage() {
                 <div
                   key={p.id}
                   draggable
-                  onDragStart={() => handleDragStart(team as any, p.id)}
+                  onDragStart={() => handleDragStart(team, p.id)}
                   onDragOver={handleDragOver}
-                  onDrop={() => handleDrop(team as any, p.id)}
+                  onDrop={() => handleDrop(team, p.id)}
                   className={`absolute w-[7%] h-[9%] rounded-full flex flex-col items-center justify-center font-bold text-xs shadow-lg transition-transform duration-300 ${
                     isDragging ? 'animate-bounce' : ''
                   }`}
