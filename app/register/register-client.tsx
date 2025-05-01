@@ -99,6 +99,8 @@ export default function RegisterClient() {
   };
 
   const handleReset = () => {
+    if (typeof window === 'undefined') return;
+    
     setPlayers([]);
     if (sport) {
       const current = JSON.parse(localStorage.getItem(sport) || '{}');
