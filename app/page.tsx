@@ -1,167 +1,62 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import FutsalField from '@/components/futsalfield'; 
+// RiftField, SoccerField 컴포넌트도 추가 예정
 
-const sportToOption: { [key: string]: number } = {
-  rift: 5,
-  futsal: 6,
-  soccer: 11,
-};
-
-export default function RegisterPage() {
+export default function HomePage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const sport = searchParams.get('sport');
+  const [selected, setSelected] = useState<string | null>(null);
 
-  const [saveOption, setSaveOption] = useState<number | null>(null);
-  const [players, setPlayers] = useState<string[]>([]);
-  const [newPlayer, setNewPlayer] = useState<string>('');
-
-  useEffect(() => {
-    if (typeof window !== 'undefined' && sport) {
-      const option = sportToOption[sport];
-      const stored = localStorage.getItem(sport);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        setPlayers(parsed.players || []);
-        setSaveOption(parsed.option || option);
-      } else {
-        const newData = { option, players: [] };
-        localStorage.setItem(sport, JSON.stringify(newData));
-        setPlayers([]);
-        setSaveOption(option);
-      }
-    }
-  }, [sport]);
-
-  const addPlayer = () => {
-    const trimmed = newPlayer.trim();
-    if (!trimmed) return alert('선수 이름을 입력하세요');
-    if (saveOption && players.length >= 2 * saveOption) {
-      alert('선수 정원을 초과했습니다');
-      setNewPlayer('');
-      return;
-    }
-    if (players.includes(trimmed)) {
-      alert('이미 등록된 선수입니다');
-      setNewPlayer('');
-      return;
-    }
-
-    const updated = [...players, trimmed];
-    setPlayers(updated);
-    setNewPlayer('');
-
-    if (sport) {
-      const current = JSON.parse(localStorage.getItem(sport) || '{}');
-      localStorage.setItem(sport, JSON.stringify({ ...current, players: updated }));
-    }
+  const handleSelect = (sport: string) => {
+    setSelected(sport);
+    router.push(`/register?sport=${sport}`);
   };
-
-  const deletePlayer = (name: string) => {
-    const updated = players.filter((p) => p !== name);
-    setPlayers(updated);
-    if (sport) {
-      const current = JSON.parse(localStorage.getItem(sport) || '{}');
-      localStorage.setItem(sport, JSON.stringify({ ...current, players: updated }));
-    }
-  };
-
-  const handleReset = () => {
-    setPlayers([]);
-    if (typeof window !== 'undefined' && sport) {
-      const current = JSON.parse(localStorage.getItem(sport) || '{}');
-      localStorage.setItem(
-        sport,
-        JSON.stringify({
-          ...current,
-          players: [],
-          remainPlayers: [],
-          team1: [],
-          team2: [],
-        })
-      );
-    }
-  };
-
-  const handleNext = () => {
-    if (sport) router.push(`/register/${sport}/draft`);
-  };
-
-  const handlePrev = () => {
-    router.push('/');
-  };
-
-  const half = Math.ceil(players.length / 2);
-  const left = players.slice(0, half);
-  const right = players.slice(half);
 
   return (
-    <div className="flex flex-col min-h-screen w-full items-center justify-center" style={{ background: 'linear-gradient(180deg, #111 0%, #000 100%)' }}>
-      <div className="max-w-4xl mx-auto p-8 bg-black/30 rounded-2xl shadow-2xl">
-        <h1 className="text-4xl font-bold mb-6 border-b-2 border-blue-400 pb-2 text-center bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent">
-          선 수 등 록
-        </h1>
+    <main
+      className="flex flex-col items-center justify-center min-h-screen p-5 box-border overflow-y-auto"
+      style={{ background: 'linear-gradient(180deg, #111 0%, #000 100%)' }}
+    >
+      <div className="flex flex-wrap justify-center gap-5 w-full max-w-[1200px]">
 
-        <p className="text-center text-lg mb-8 text-blue-300 font-semibold">
-          {saveOption ? `${saveOption} vs ${saveOption}` : '로딩 중...'}
-        </p>
-
-        <form onSubmit={(e) => { e.preventDefault(); addPlayer(); }} className="flex justify-center items-center gap-4 mb-8">
-          <input
-            type="text"
-            value={newPlayer}
-            onChange={(e) => setNewPlayer(e.target.value)}
-            placeholder="선수 입력"
-            className="border-2 border-blue-400 rounded-full px-4 py-2 w-1/2 focus:outline-none focus:ring-2 focus:ring-indigo-400 shadow bg-white text-black"
-          />
-          <button
-            type="submit"
-            className="bg-gradient-to-r from-blue-400 to-indigo-500 text-white px-6 py-2 rounded-full hover:scale-105 transition shadow-lg"
+        {/* 박스 하나의 패턴 */}
+        {['rift', 'futsal', 'soccer'].map((sport) => (
+          <div
+            key={sport}
+            className={`group relative flex flex-col items-center justify-center rounded-lg shadow-md cursor-pointer transition-transform transform hover:-translate-y-1 hover:shadow-lg
+              w-[calc(33.33%-20px)] max-w-[300px] aspect-square overflow-hidden
+              ${selected === sport ? 'scale-105' : ''}
+            `}
+            onClick={() => handleSelect(sport)}
           >
-            추가
-          </button>
-        </form>
+            {/* 기본 밝은 배경 */}
+            <div className="absolute inset-0 bg-gradient-to-br from-sky-300 to-sky-500 transition-opacity duration-300" />
 
-        <div className="flex flex-col items-center justify-center mb-12">
-          <h2 className="text-xl font-bold mb-4 text-center text-indigo-300">선수 목록 {players.length}명</h2>
-          <div className="flex justify-center gap-8">
-            <ul className="flex flex-col gap-3">
-              {left.map((player, idx) => (
-                <li key={idx} className="w-32 h-12 flex items-center justify-between bg-white px-4 rounded-full shadow-md border-2 border-blue-100 hover:scale-105 transition text-black">
-                  <span className="overflow-hidden whitespace-nowrap text-ellipsis">{player}</span>
-                  <button className="text-red-400 hover:text-red-600 ml-2" onClick={() => deletePlayer(player)}>✖</button>
-                </li>
-              ))}
-            </ul>
-            <ul className="flex flex-col gap-3">
-              {right.map((player, idx) => (
-                <li key={idx} className="w-32 h-12 flex items-center justify-between bg-white px-4 rounded-full shadow-md border-2 border-blue-100 hover:scale-105 transition text-black">
-                  <span className="overflow-hidden whitespace-nowrap text-ellipsis">{player}</span>
-                  <button className="text-red-400 hover:text-red-600 ml-2" onClick={() => deletePlayer(player)}>✖</button>
-                </li>
-              ))}
-            </ul>
+            {/* hover 시 덮는 진한 배경 */}
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-indigo-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+            {/* 선택된 경우 진한 배경 위에 추가 레이어 */}
+            {selected === sport && (
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-indigo-700 opacity-100" />
+            )}
+
+            <div className="relative z-10 w-4/5 max-h-[200px] flex items-center justify-center">
+              {sport === 'futsal' ? (
+                <FutsalField bg="#0" className="group-hover:stroke-cyan-400" />
+              ) : (
+                <div className="text-center text-white">
+                  {sport === 'rift' ? '5vs5 협곡 (임시)' : '11vs11 축구 (임시)'}
+                </div>
+              )}
+            </div>
+            <span className="relative z-10 mt-2 text-base font-bold text-center text-white">
+              {sport === 'rift' ? '5vs5 협곡' : sport === 'futsal' ? '6vs6 풋살' : '11vs11 축구'}
+            </span>
           </div>
-        </div>
-
-        <div className="flex justify-center space-x-6">
-          <button onClick={handlePrev} className="px-6 py-2 rounded-full bg-gradient-to-r from-gray-700 to-gray-900 text-white hover:scale-105 transition shadow-lg">이전</button>
-          <button onClick={handleReset} className="px-6 py-2 rounded-full bg-gradient-to-r from-purple-400 to-purple-700 text-white hover:scale-105 transition shadow-lg">초기화</button>
-          <button
-            onClick={handleNext}
-            disabled={saveOption ? players.length !== 2 * saveOption : true}
-            className={`px-6 py-2 rounded-full shadow-lg transition ${
-              saveOption && players.length === 2 * saveOption
-                ? 'bg-gradient-to-r from-green-400 to-green-600 hover:scale-105 text-white'
-                : 'bg-gray-400 text-white cursor-not-allowed'
-            }`}
-          >
-            다음
-          </button>
-        </div>
+        ))}
       </div>
-    </div>
+    </main>
   );
 }
