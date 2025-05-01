@@ -4,7 +4,6 @@ import React, { useRef, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import html2canvas from 'html2canvas';
 import { saveAs } from 'file-saver';
-import Image from 'next/image';
 
 const POSITION = ['top', 'jug', 'mid', 'adc', 'sup'];
 
