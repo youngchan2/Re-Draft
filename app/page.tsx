@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import FutsalField from '@/components/futsalfield'; 
-// RiftField, SoccerField 컴포넌트도 추가 예정
+import Rift from '@/components/rift';
 
 export default function HomePage() {
   const router = useRouter();
@@ -47,7 +47,9 @@ export default function HomePage() {
                 <FutsalField bg="#0" className="group-hover:stroke-cyan-400" />
               ) : (
                 <div className="text-center text-white">
-                  {sport === 'rift' ? '5vs5 협곡 (임시)' : '11vs11 축구 (임시)'}
+                  {sport === 'rift' ? (
+                    <Rift className="group-hover:stroke-cyan-400" />
+                  ) : '11vs11 축구 (임시)'}
                 </div>
               )}
             </div>
