@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import FutsalField from '@/components/futsalfield'; 
-import Rift from '@/components/rift';
+import Rift from '@/components/Rift';
 
 export default function HomePage() {
   const router = useRouter();
